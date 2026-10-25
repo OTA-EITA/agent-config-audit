@@ -24,7 +24,10 @@ const tokenFormats: [string, RegExp][] = [
 const inlineAssignment =
   /\b([A-Z0-9_]*(PASSWORD|PASSWD|SECRET|TOKEN|API_?KEY|ACCESS_KEY)[A-Z0-9_]*)=(['"]?)([^\s'"]{6,})\3/;
 /** scheme://user:password@host */
-const urlCredentials = /\b[a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:([^\s@/]{3,})@/i;
+const urlCredentials = /\b[a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:([^\s@/]{3,})@([^\s/:?]+)/i;
+/** Well-known defaults that only make sense against a local development database. */
+const localDefaults = /^(postgres|password|pass|root|admin|mysql|secret|test|dev|example)$/i;
+const localHost = /^(localhost|127\.\d+\.\d+\.\d+|\[?::1\]?|0\.0\.0\.0|host\.docker\.internal)$/i;
 /** Field names whose values are secrets. */
 export const secretName =
   /(token|secret|passw(or)?d|api[_-]?key|access[_-]?key|private[_-]?key|credential|auth(orization)?|cookie|session)/i;
@@ -52,7 +55,8 @@ export function findSecret(value: string): SecretMatch | undefined {
     if (m) return { kind, preview: mask(m[0]) };
   }
   const url = urlCredentials.exec(value);
-  if (url?.[1] && !isReference(url[1]) && !placeholder.test(url[1])) {
+  const devDefault = url?.[1] && url[2] && localHost.test(url[2]) && localDefaults.test(url[1]);
+  if (url?.[1] && !isReference(url[1]) && !placeholder.test(url[1]) && !devDefault) {
     return { kind: "password in URL", preview: mask(url[1]) };
   }
   const assign = inlineAssignment.exec(value);
@@ -70,6 +74,8 @@ export function findNamedSecret(name: string, value: string): SecretMatch | unde
   const known = findSecret(value);
   if (known) return known;
   if (!secretName.test(name) || isReference(value)) return undefined;
+  // Paths to credential files (GOOGLE_APPLICATION_CREDENTIALS, *_PATH, *_FILE) are not secrets themselves.
+  if (/(_PATH|_FILE|_DIR|_HELPER)$/i.test(name) || /^(~|\.{0,2}\/|[A-Za-z]:\\)/.test(value)) return undefined;
   const literal = value.replace(/^(Bearer|Basic|token)\s+/i, "").trim();
   if (literal.length < 8 || placeholder.test(literal) || /\s/.test(literal)) return undefined;
   return { kind: `literal value in ${name}`, preview: mask(literal) };
