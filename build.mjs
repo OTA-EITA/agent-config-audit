@@ -15,6 +15,8 @@ const common = {
   platform: "node",
   target: "node22",
   format: "esm",
+  // jsonc-parser's default UMD build require()s its modules at runtime, which a bundle can't follow; use its ESM build.
+  mainFields: ["module", "main"],
   legalComments: "none",
   define: { __VERSION__: JSON.stringify(version) },
 };
