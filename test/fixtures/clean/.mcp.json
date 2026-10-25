@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@2025.8.21", "./docs"]
+    },
+    "local": {
+      "type": "http",
+      "url": "http://localhost:3845/mcp"
+    },
+    "db": {
+      "command": "uvx",
+      "args": ["mcp-server-postgres==0.4.1", "postgres://postgres:postgres@localhost:5432/dev"],
+      "env": { "API_KEY": "${API_KEY:-}", "GOOGLE_APPLICATION_CREDENTIALS": "./sa.json" }
+    }
+  }
+}
