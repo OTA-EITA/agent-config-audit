@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://app:Sup3rS3cretPw@db.internal:5432/app"]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@2025.8.21", "/"]
+    },
+    "aws": {
+      "command": "uvx",
+      "args": ["awslabs.aws-api-mcp-server@latest"],
+      "env": { "AWS_ACCESS_KEY_ID": "AKIAIOSFODNN7EXAMPLE", "AWS_REGION": "us-east-1" }
+    },
+    "remote": {
+      "type": "http",
+      "url": "http://mcp.example.com/mcp",
+      "headers": { "Authorization": "Bearer 3f9a2c7e1b5d4e8f9a0b" }
+    },
+    "docker-tools": {
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "-v", "/var/run/docker.sock:/var/run/docker.sock", "ghcr.io/example/tools:1.0.0"]
+    }
+  }
+}

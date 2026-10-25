@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@^0.1.0", "https://mcp.linear.app/sse"],
+      "env": { "LINEAR_API_KEY": "${env:LINEAR_API_KEY}" }
+    }
+  }
+}

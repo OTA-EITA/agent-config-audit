@@ -1,0 +1,13 @@
+{
+  // VS Code allows comments here.
+  "inputs": [
+    { "type": "promptString", "id": "github-token", "description": "GitHub token" }
+  ],
+  "servers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${input:github-token}" },
+    },
+  },
+}
