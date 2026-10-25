@@ -1,0 +1,27 @@
+name: agent-config-audit
+description: Catch hardcoded secrets, unpinned MCP servers and permission bypasses in Claude Code, Cursor and VS Code agent configs
+author: OTA-EITA
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  path:
+    description: Space separated files or directories to scan
+    default: .
+  fail-on:
+    description: Fail on findings at least this severe (high, medium, low or none)
+    default: high
+  sarif-file:
+    description: Where to write the SARIF report
+    default: agent-config-audit.sarif
+
+outputs:
+  sarif-file:
+    description: Path of the SARIF report, for github/codeql-action/upload-sarif
+  findings:
+    description: Number of findings
+
+runs:
+  using: node24
+  main: dist/action.js
