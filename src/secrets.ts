@@ -63,7 +63,14 @@ export function findSecret(value: string): SecretMatch | undefined {
   // TOKEN_URL_BASE, SECRET_FILE and the like name where a secret lives, not the secret.
   const pointer =
     assign?.[1] !== undefined && /(URL|URI|HOST|PATH|FILE|DIR|ENDPOINT|BASE)(_|$)/.test(assign[1]);
-  if (assign?.[4] && !isReference(assign[4]) && !placeholder.test(assign[4]) && !pointer) {
+  // "$NAME" is the shell expanding a variable, not a literal.
+  if (
+    assign?.[4] &&
+    !assign[4].startsWith("$") &&
+    !isReference(assign[4]) &&
+    !placeholder.test(assign[4]) &&
+    !pointer
+  ) {
     return { kind: `${assign[1] ?? "secret"} in a command`, preview: mask(assign[4]) };
   }
   return undefined;
