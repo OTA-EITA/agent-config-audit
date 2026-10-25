@@ -60,7 +60,10 @@ export function findSecret(value: string): SecretMatch | undefined {
     return { kind: "password in URL", preview: mask(url[1]) };
   }
   const assign = inlineAssignment.exec(value);
-  if (assign?.[4] && !isReference(assign[4]) && !placeholder.test(assign[4])) {
+  // TOKEN_URL_BASE, SECRET_FILE and the like name where a secret lives, not the secret.
+  const pointer =
+    assign?.[1] !== undefined && /(URL|URI|HOST|PATH|FILE|DIR|ENDPOINT|BASE)(_|$)/.test(assign[1]);
+  if (assign?.[4] && !isReference(assign[4]) && !placeholder.test(assign[4]) && !pointer) {
     return { kind: `${assign[1] ?? "secret"} in a command`, preview: mask(assign[4]) };
   }
   return undefined;
